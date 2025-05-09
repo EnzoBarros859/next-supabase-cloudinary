@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { uploadToCloudinary } from '@/utils/cloudinary';
 import { saveMediaToSupabase, getMediaFromSupabase } from '@/utils/supabase';
+import LazyVideo from '@/components/LazyVideo';
 
 interface Media {
   id: number;
@@ -59,7 +60,7 @@ export default function Home() {
 
       // Upload to Cloudinary
       const cloudinaryData = await uploadToCloudinary(file);
-      console.log(cloudinaryData);
+
       // Save to Supabase
       const mediaData = {
         title,
@@ -69,7 +70,7 @@ export default function Home() {
       };
 
       await saveMediaToSupabase(mediaData);
-
+      
       // Refresh media list
       await loadMedia();
 
@@ -101,7 +102,7 @@ export default function Home() {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="text-black w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter media title"
               />
             </div>
@@ -146,12 +147,12 @@ export default function Home() {
                   src={media.cloudinary_url}
                   alt={media.title}
                   className="w-full h-48 object-cover"
+                  loading="lazy"
                 />
               ) : (
-                <video
+                <LazyVideo
                   src={media.cloudinary_url}
-                  controls
-                  className="w-full h-48 object-cover"
+                  title={media.title}
                 />
               )}
               <div className="p-4">
