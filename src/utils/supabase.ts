@@ -26,15 +26,19 @@ export const saveMediaToSupabase = async (mediaData: {
   }
 };
 
-export const getMediaFromSupabase = async () => {
+export const getMediaFromSupabase = async (page: number = 1, itemsPerPage: number = 9) => {
   try {
-    const { data, error } = await supabase
+    const from = (page - 1) * itemsPerPage;
+    const to = from + itemsPerPage - 1;
+
+    const { data, error, count } = await supabase
       .from('media')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(from, to);
 
     if (error) throw error;
-    return data;
+    return { data, totalCount: count };
   } catch (error) {
     console.error('Error fetching from Supabase:', error);
     throw error;

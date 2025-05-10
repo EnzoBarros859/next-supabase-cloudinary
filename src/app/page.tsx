@@ -20,19 +20,25 @@ export default function Home() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mediaList, setMediaList] = useState<Media[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 9;
 
   useEffect(() => {
     loadMedia();
-  }, []);
+  }, [currentPage]);
 
   const loadMedia = async () => {
     try {
-      const data = await getMediaFromSupabase();
+      const { data, totalCount } = await getMediaFromSupabase(currentPage, itemsPerPage);
       setMediaList(data || []);
+      setTotalItems(totalCount || 0);
     } catch (error) {
       console.error('Error loading media:', error);
     }
   };
+
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -85,8 +91,8 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen p-8">
-      <div className="max-w-4xl mx-auto">
+    <main className="min-h-screen bg-gray-100 py-8">
+      <div className="container mx-auto px-4">
         <h1 className="text-4xl font-bold text-blue-600 mb-8">
           Media Upload System
         </h1>
@@ -138,31 +144,56 @@ export default function Home() {
           </form>
         </div>
 
-        {/* Media Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mediaList.map((media) => (
-            <div key={media.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-              {media.type === 'image' ? (
-                <img
-                  src={media.cloudinary_url}
-                  alt={media.title}
-                  className="w-full h-48 object-cover"
-                  loading="lazy"
-                />
-              ) : (
-                <LazyVideo
-                  src={media.cloudinary_url}
-                  title={media.title}
-                />
-              )}
-              <div className="p-4">
-                <h3 className="font-semibold text-gray-800">{media.title}</h3>
-                <p className="text-sm text-gray-500">
-                  {new Date(media.created_at).toLocaleDateString()}
-                </p>
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-6">Media Gallery</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {mediaList.map((media) => (
+              <div key={media.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                {media.type === 'image' ? (
+                  <img
+                    src={media.cloudinary_url}
+                    alt={media.title}
+                    className="w-full h-48 object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <LazyVideo
+                    src={media.cloudinary_url}
+                    title={media.title}
+                  />
+                )}
+                <div className="p-4">
+                  <h3 className="font-semibold text-gray-800">{media.title}</h3>
+                  <p className="text-sm text-gray-500">
+                    {new Date(media.created_at).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
+            ))}
+          </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="mt-8 flex justify-center items-center gap-4">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
+              <span className="text-gray-600">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
             </div>
-          ))}
+          )}
         </div>
       </div>
     </main>
