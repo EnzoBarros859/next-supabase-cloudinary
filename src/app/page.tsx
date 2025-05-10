@@ -91,14 +91,14 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-100 py-8">
-      <div className="container mx-auto px-4">
-        <h1 className="text-4xl font-bold text-blue-600 mb-8">
+    <main className="min-h-screen bg-gray-100 py-4 sm:py-6 md:py-8">
+      <div className="container mx-auto px-4 max-w-6xl">
+        <h1 className="text-3xl sm:text-4xl font-bold text-blue-600 mb-6 sm:mb-8">
           Media Upload System
         </h1>
 
         {/* Upload Form */}
-        <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md mb-6 sm:mb-8">
           <form onSubmit={handleUpload} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -144,27 +144,33 @@ export default function Home() {
           </form>
         </div>
 
-        <div className="mt-8">
-          <h2 className="text-2xl font-bold mb-6">Media Gallery</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="mt-6 sm:mt-8">
+          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Media Gallery</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {mediaList.map((media) => (
-              <div key={media.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                {media.type === 'image' ? (
-                  <img
-                    src={media.cloudinary_url}
-                    alt={media.title}
-                    className="w-full h-48 object-cover"
-                    loading="lazy"
-                  />
-                ) : (
-                  <LazyVideo
-                    src={media.cloudinary_url}
-                    title={media.title}
-                  />
-                )}
-                <div className="p-4">
-                  <h3 className="font-semibold text-gray-800">{media.title}</h3>
-                  <p className="text-sm text-gray-500">
+              <div key={media.id} className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-full">
+                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                  {media.type === 'image' ? (
+                    <img
+                      src={media.cloudinary_url}
+                      alt={media.title}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 w-full h-full">
+                      <video
+                        src={media.cloudinary_url}
+                        className="w-full h-full object-cover"
+                        controls
+                        preload="metadata"
+                      />
+                    </div>
+                  )}
+                </div>
+                <div className="p-3 sm:p-4 flex-grow">
+                  <h3 className="font-semibold text-gray-800 text-sm sm:text-base line-clamp-1">{media.title}</h3>
+                  <p className="text-xs sm:text-sm text-gray-500 mt-1">
                     {new Date(media.created_at).toLocaleDateString()}
                   </p>
                 </div>
@@ -174,21 +180,21 @@ export default function Home() {
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="mt-8 flex justify-center items-center gap-4">
+            <div className="mt-6 sm:mt-8 flex justify-center items-center gap-3 sm:gap-4">
               <button
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
                 Previous
               </button>
-              <span className="text-gray-600">
+              <span className="text-sm sm:text-base text-gray-600">
                 Page {currentPage} of {totalPages}
               </span>
               <button
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
                 Next
               </button>
