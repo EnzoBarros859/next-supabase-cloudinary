@@ -2,6 +2,8 @@
 
 A modern media upload system built with Next.js, Supabase, and Cloudinary. This application allows users to upload and manage images and videos with lazy loading support.
 
+![image](https://github.com/user-attachments/assets/84ca71a0-03b6-405a-9279-7c3375371fe2)
+
 ## Features
 
 - 🖼️ Image and video upload support
